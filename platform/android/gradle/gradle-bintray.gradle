@@ -23,6 +23,11 @@ bintray {
             name = rootProject.ext.versionName
             desc = rootProject.ext.mapboxBintrayDescription
             released = new Date()
+            gpg {
+                sign = false
+                passphrase = project.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : System.getenv('GPG_PASSPHRASE')
+            }
+
             mavenCentralSync {
                 sync = false
             }
