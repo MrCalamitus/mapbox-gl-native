@@ -1,6 +1,8 @@
 apply plugin: 'com.jfrog.bintray'
 
 bintray {
+    println 'Starting bintray task'
+
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_KEY')
     publications = ['MapboxMapsSdkPublication']
@@ -25,7 +27,7 @@ bintray {
             released = new Date()
             gpg {
                 sign = false
-                passphrase = project.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : System.getenv('GPG_PASSPHRASE')
+                passphrase = rootProject.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : System.getenv('GPG_PASSPHRASE')
             }
 
             mavenCentralSync {
@@ -33,9 +35,54 @@ bintray {
             }
         }
     }
+    println 'Done with bintray task'
+
 }
 
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            println 'starting install task'
+
+            name rootProject.ext.mapboxBintrayPackageName
+            println 'name = ' + name
+
+            description rootProject.ext.mapboxBintrayDescription
+            url rootProject.ext.mapboxArtifactGitUrl
+            inceptionYear rootProject.ext.mapboxArtifactInceptionYear
+
+            packaging 'aar'
+            groupId rootProject.ext.mapboxArtifactGroup
+            artifactId rootProject.ext.mapboxBintrayArtifactId
+            version rootProject.ext.versionName
+
+            scm {
+                connection rootProject.ext.mapboxArtifactVcsUrl
+                url rootProject.ext.mapboxArtifactScmUrl
+            }
+
+            developers {
+                developer {
+                    name rootProject.ext.mapboxArtifactDeveloperName
+                }
+            }
+
+            licenses {
+                license {
+                    name rootProject.ext.mapboxLicenseName
+                    url rootProject.ext.mapboxLicenseUrl
+                    distribution 'repo'
+                }
+            }
+            println 'ending install task'
+
+        }
+    }
+}
+
+
 publishing {
+    println 'Starting publishing task'
     publications {
         MapboxMapsSdkPublication(MavenPublication) {
             pom.withXml {
@@ -53,4 +100,5 @@ publishing {
             }
         }
     }
+    println 'Ending publishing task'
 }
