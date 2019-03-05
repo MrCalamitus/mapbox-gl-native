@@ -1,26 +1,21 @@
 apply plugin: 'com.jfrog.bintray'
 
 bintray {
-    println 'Starting bintray task'
-
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_KEY')
     publications = ['MapboxMapsSdkPublication']
     dryRun = false // Whether to run this as dry-run, without deploying
     publish = false // Whether version should be auto published after an upload
-    override = false // Whether to override version artifacts already published
+    override = true // Whether to override version artifacts already published
     pkg {
         userOrg = rootProject.ext.mapboxBintrayUserOrg
         repo = rootProject.ext.mapboxBintrayRepoName
         name = rootProject.ext.mapboxBintrayPackageName
         desc = rootProject.ext.mapboxBintrayDescription
-
         websiteUrl = rootProject.ext.mapboxArtifactUrl
         issueTrackerUrl = rootProject.ext.mapboxArtifactTrackerUrl
         vcsUrl = rootProject.ext.mapboxArtifactVcsUrl
-
         licenses = [rootProject.ext.mapboxLicenseName]
-
         version {
             name = rootProject.ext.versionName
             desc = rootProject.ext.mapboxBintrayDescription
@@ -29,33 +24,24 @@ bintray {
                 sign = false
                 passphrase = rootProject.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : System.getenv('GPG_PASSPHRASE')
             }
-
             mavenCentralSync {
                 sync = false
             }
         }
     }
-    println 'Done with bintray task'
-
 }
 
 install {
     repositories.mavenInstaller {
         pom.project {
-            println 'starting install task'
-
             name rootProject.ext.mapboxBintrayPackageName
-            println 'name = ' + name
-
             description rootProject.ext.mapboxBintrayDescription
             url rootProject.ext.mapboxArtifactGitUrl
             inceptionYear rootProject.ext.mapboxArtifactInceptionYear
-
             packaging 'aar'
             groupId rootProject.ext.mapboxArtifactGroup
             artifactId rootProject.ext.mapboxBintrayArtifactId
             version rootProject.ext.versionName
-
             scm {
                 connection rootProject.ext.mapboxArtifactVcsUrl
                 url rootProject.ext.mapboxArtifactScmUrl
@@ -74,15 +60,12 @@ install {
                     distribution 'repo'
                 }
             }
-            println 'ending install task'
-
         }
     }
 }
 
 
 publishing {
-    println 'Starting publishing task'
     publications {
         MapboxMapsSdkPublication(MavenPublication) {
             pom.withXml {
@@ -100,5 +83,4 @@ publishing {
             }
         }
     }
-    println 'Ending publishing task'
 }
